@@ -34,9 +34,10 @@
       gap: calc(var(--base) / 4);
     }
 
-    .column-selector,
+    .pill-selector,
     .where-builder,
-    .sort-complex {
+    .sort-complex,
+    .group-by-builder {
       margin-top: base(1);
     }
 
@@ -82,7 +83,7 @@
         width: 100%;
       }
 
-      .column-selector,
+      .pill-selector,
       .where-builder,
       .sort-complex {
         margin-top: calc(var(--base) / 2);
@@ -90,7 +91,8 @@
 
       &__toggle-columns,
       &__toggle-where,
-      &__toggle-sort {
+      &__toggle-sort,
+      &__toggle-group-by {
         flex: 1;
       }
     }

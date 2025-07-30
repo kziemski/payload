@@ -1,4 +1,11 @@
-import type { BuildFormStateArgs, ClientConfig, ClientUser, ErrorResult, FormState } from 'payload'
+import type {
+  BuildFormStateArgs,
+  ClientConfig,
+  ClientUser,
+  ErrorResult,
+  FormState,
+  ServerFunction,
+} from 'payload'
 
 import { formatErrors } from 'payload'
 import { getSelectMode, reduceFieldsToValues } from 'payload/shared'
@@ -36,9 +43,10 @@ type BuildFormStateErrorResult = {
 
 export type BuildFormStateResult = BuildFormStateErrorResult | BuildFormStateSuccessResult
 
-export const buildFormStateHandler = async (
-  args: BuildFormStateArgs,
-): Promise<BuildFormStateResult> => {
+export const buildFormStateHandler: ServerFunction<
+  BuildFormStateArgs,
+  Promise<BuildFormStateResult>
+> = async (args) => {
   const { req } = args
 
   const incomingUserSlug = req.user?.collection
@@ -86,7 +94,7 @@ export const buildFormStateHandler = async (
     }
 
     if (err.message === 'Unauthorized') {
-      return null
+      throw new Error('Unauthorized')
     }
 
     return formatErrors(err)
@@ -109,6 +117,7 @@ export const buildFormState = async (
     initialBlockFormState,
     mockRSCs,
     operation,
+    readOnly,
     renderAllFields,
     req,
     req: {
@@ -211,6 +220,7 @@ export const buildFormState = async (
     permissions: docPermissions?.fields || {},
     preferences: docPreferences || { fields: {} },
     previousFormState: formState,
+    readOnly,
     renderAllFields,
     renderFieldFn: renderField,
     req,

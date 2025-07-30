@@ -1,6 +1,7 @@
-// @ts-strict-ignore
+/* eslint-disable no-restricted-exports */
 import type { CollectionSlug, Payload, RequestContext, TypedLocale } from '../../../index.js'
 import type { Document, PayloadRequest, PopulateType, SelectType } from '../../../types/index.js'
+import type { CreateLocalReqOptions } from '../../../utilities/createLocalReq.js'
 import type { TypeWithVersion } from '../../../versions/types.js'
 import type { DataFromCollectionSlug } from '../../config/types.js'
 
@@ -70,12 +71,21 @@ export type Options<TSlug extends CollectionSlug> = {
    */
   showHiddenFields?: boolean
   /**
+   * When set to `true`, the operation will return a document by ID, even if it is trashed (soft-deleted).
+   * By default (`false`), the operation will exclude trashed documents.
+   * To fetch a trashed document, set `trash: true`.
+   *
+   * This argument has no effect unless `trash` is enabled on the collection.
+   * @default false
+   */
+  trash?: boolean
+  /**
    * If you set `overrideAccess` to `false`, you can pass a user to use against the access control checks.
    */
   user?: Document
 }
 
-export default async function findVersionByIDLocal<TSlug extends CollectionSlug>(
+export async function findVersionByIDLocal<TSlug extends CollectionSlug>(
   payload: Payload,
   options: Options<TSlug>,
 ): Promise<TypeWithVersion<DataFromCollectionSlug<TSlug>>> {
@@ -88,6 +98,7 @@ export default async function findVersionByIDLocal<TSlug extends CollectionSlug>
     populate,
     select,
     showHiddenFields,
+    trash = false,
   } = options
 
   const collection = payload.collections[collectionSlug]
@@ -107,8 +118,9 @@ export default async function findVersionByIDLocal<TSlug extends CollectionSlug>
     disableErrors,
     overrideAccess,
     populate,
-    req: await createLocalReq(options, payload),
+    req: await createLocalReq(options as CreateLocalReqOptions, payload),
     select,
     showHiddenFields,
+    trash,
   })
 }
